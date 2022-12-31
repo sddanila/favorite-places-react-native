@@ -1,14 +1,34 @@
+// EXPO LOCATION
 import { Image, StyleSheet, Text, View } from "react-native";
 import OutlinedButton from "../ui/OutlinedButton";
 import { getCurrentPositionAsync, useForegroundPermissions, PermissionStatus } from 'expo-location'
 
 import { Colors } from "../../constants/colors";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useNavigation, useRoute, useIsFocused } from '@react-navigation/native'
 import getMapPreview from "../../util/location";
 
-export default function LocationPicker() {
+export default function LocationPicker({ onLocationPicked }) {
   const [pickedLocation, setPickedLocation] = useState()
+  const navigation = useNavigation()
+  const route = useRoute()
+  const isFocused = useIsFocused()
+
   const [locationPermissionInformation, requestPermission] = useForegroundPermissions()
+
+  useEffect(() => {
+    if (isFocused && route.params) {
+      const mapPickedLocation = {
+        lat: route.params.pickedLat,
+        lng: route.params.pickedLng
+      }
+      setPickedLocation(mapPickedLocation)
+    }
+  }, [route, isFocused])
+
+  useEffect(() => {
+    onLocationPicked(pickedLocation)
+  }, [pickedLocation, onLocationPicked])
 
   async function verifyPermissions() {
     if (locationPermissionInformation.status === PermissionStatus.UNDETERMINED) {
@@ -42,7 +62,7 @@ export default function LocationPicker() {
   }
 
   function pickOnMapHandler() {
-
+    navigation.navigate('Map')
   }
 
   let locationPreview = <Text>No location has been picked yet.</Text>

@@ -6,11 +6,32 @@ import AllPlaces from './screens/AllPlaces';
 import AddPlace from './screens/AddPlace';
 import IconButton from './components/ui/IconButton';
 import { Colors } from './constants/colors'
-import Map from './screens/Map';
+import Map from './screens/Map'
+import { useState, useEffect } from 'react'
+import { init } from './util/database'
+import * as SplashScreen from 'expo-splash-screen'
+import PlaceDetails from './screens/PlaceDetails';
+
+// Keep the splash screen visible while we fetch resources
+SplashScreen.preventAutoHideAsync();
 
 const Stack = createNativeStackNavigator()
 
 export default function App() {
+  const [appIsReady, setAppIsReady] = useState(false);
+
+  useEffect(() => {
+    init().then(() => {
+      setAppIsReady(true)
+    }).catch((err) => {
+      console.log(err)
+    })
+  }, [])
+
+  if(appIsReady) {
+    SplashScreen.hideAsync()
+  }
+
   return (
     <>
       <StatusBar style='dark' />
@@ -49,6 +70,13 @@ export default function App() {
             component={Map}
             options={{
               title: "Add a New Place"
+            }}
+          />
+          <Stack.Screen
+            name="PlaceDetails"
+            component={PlaceDetails}
+            options={{
+              title: "Place Details"
             }}
           />
         </Stack.Navigator>

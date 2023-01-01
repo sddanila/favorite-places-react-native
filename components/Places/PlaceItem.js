@@ -4,7 +4,7 @@ import { Colors } from "../../constants/colors"
 
 export default function PlaceItem({ place, onSelect }) {
   return (
-    <Pressable onPress={onSelect} style={({pressed}) => [styles.item, pressed && styles.pressed]}>
+    <Pressable onPress={onSelect.bind(this, place.id)} style={({pressed}) => [styles.item, pressed && styles.pressed]}>
       <Image style={styles.image} source={{uri: place.imageUri}} />
       <View style={styles.info}>
         <Text style={styles.title}>{place.title}</Text>
@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
     flex: 1,
     borderBottomLeftRadius: 4,
     borderTopLeftRadius: 4,
-    height: 100
+    height: '100%'
   },
   info: {
     flex: 2,

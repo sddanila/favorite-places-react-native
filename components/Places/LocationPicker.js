@@ -6,7 +6,7 @@ import { getCurrentPositionAsync, useForegroundPermissions, PermissionStatus } f
 import { Colors } from "../../constants/colors";
 import { useEffect, useState } from "react";
 import { useNavigation, useRoute, useIsFocused } from '@react-navigation/native'
-import getMapPreview from "../../util/location";
+import { getMapPreview, getAddress } from "../../util/location";
 
 export default function LocationPicker({ onLocationPicked }) {
   const [pickedLocation, setPickedLocation] = useState()
@@ -27,7 +27,17 @@ export default function LocationPicker({ onLocationPicked }) {
   }, [route, isFocused])
 
   useEffect(() => {
-    onLocationPicked(pickedLocation)
+    async function handleLocation() {
+      if (pickedLocation) {
+       const address =  await getAddress(
+          pickedLocation.lat,
+          pickedLocation.lng
+        )
+        onLocationPicked({ ...pickedLocation, address: address })
+      }
+    }
+
+    handleLocation()
   }, [pickedLocation, onLocationPicked])
 
   async function verifyPermissions() {
